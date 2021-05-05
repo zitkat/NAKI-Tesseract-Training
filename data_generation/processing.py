@@ -139,26 +139,26 @@ def save_page(page_path, page):
         pickle.dump(page, pickle_file)
 
 def save_page_teseract(page_path, page):
-    with open(page_path, 'w', encoding='utf_8_sig') as txt_file:
+    with open(page_path, 'w', encoding='utf_8') as txt_file:
         for box in page.boxes:
             for line in box.lines:
                 for words in line.words:
                     for character in words.characters:
-                        txt_file.write(character.character + " " + str(line.x) + " " + str(page.resolution_h - line.y)
-                                       + " " + str(line.x + line.w) + " " + str(page.resolution_h - (line.y + line.h))
+                        txt_file.write(character.character + " " + str(line.x) + " " + str(page.resolution_h - (line.y + line.h))
+                                       + " " + str(line.x + line.w) + " " + str(page.resolution_h - line.y)
                                        + " 0" + "\n")
-                    txt_file.write(" " + " " + str(line.x) + " " + str(page.resolution_h - line.y)
-                                   + " " + str(line.x + line.w) + " " + str(page.resolution_h - (line.y + line.h))
+                    txt_file.write(" " + " " + str(line.x) + " " + str(page.resolution_h - (line.y + line.h))
+                                   + " " + str(line.x + line.w) + " " + str(page.resolution_h - line.y)
                                    + " 0" + "\n")
-                txt_file.write("\t" + " " + str(line.x) + " " + str(page.resolution_h - line.y)
-                               + " " + str(line.x + line.w) + " " + str(page.resolution_h - (line.y + line.h))
+                txt_file.write("\t" + " " + str(line.x) + " " + str(page.resolution_h - (line.y + line.h))
+                               + " " + str(line.x + line.w) + " " + str(page.resolution_h - line.y)
                                + " 0" + "\n")
 
 
 
 def tune_size(roi, original_x, original_y, min_contour_size):
     ret, thresh = cv2.threshold(roi, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
-    im2, contours, hierarchy = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    contours, hierarchy = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
     cont = []
     for c in contours:

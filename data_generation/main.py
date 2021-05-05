@@ -83,10 +83,10 @@ else:
 # PROCESS
 for path in text_file_paths:
     name = os.path.splitext(ntpath.basename(path))[0]
-    with codecs.open(path, "r", encoding="utf_8_sig") as f:
+    with codecs.open(path, "r", encoding="utf_8") as f:
         text = f.read()
 
-        text = text.replace("\r\n", " ")
+        # text = text.replace("\r\n", " ")
 
         img_background = get_background(vae_model)
         # create object for image text processing
