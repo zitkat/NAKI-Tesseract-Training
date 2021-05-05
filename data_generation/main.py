@@ -85,8 +85,7 @@ for path in text_file_paths:
     name = os.path.splitext(ntpath.basename(path))[0]
     with codecs.open(path, "r", encoding="utf_8") as f:
         text = f.read()
-
-        # text = text.replace("\r\n", " ")
+        text = text.replace("\r\n", " ")
 
         img_background = get_background(vae_model)
         # create object for image text processing
@@ -102,11 +101,15 @@ for path in text_file_paths:
         for idx, text_img in enumerate(text_imgs):
             img_background = get_background(vae_model)
             img_combined = processing.combine_images(text_img, img_background, var2)
-            pg_tuned = processing.fine_tuning_onfly(IT.page_objects[idx], cv2.cvtColor(img_combined, cv2.COLOR_BGR2GRAY), min_contour_size)
+            pg_tuned = processing.fine_tuning_onfly(IT.page_objects[idx], text_img, min_contour_size)
             processing.save_page_teseract(output_box_path + name + "_1_" + 'teseract' + ".box", pg_tuned)
+            # processing.save_page(output_pg_path + name + "_4_" + ".pickle", pg_tuned)
             cv2.imwrite(output_img_path + name + "_1_" + 'teseract' +".png", img_combined)
 
-# ----------------------------------------------------------------------------------------------------------------------
+            # IT.visualize(output_img_path + name + "_1_" + 'teseract' +".png", output_pg_path + name + "_4_" + ".pickle", output_img_path + name + "result_TFF_lines.png",
+            #          draw_lines=True, draw_words=True, draw_characters=True, visualize=False)
+
+    # ----------------------------------------------------------------------------------------------------------------------
 
 # ----------------------------------------------------------------------------------------------------------------------
 

@@ -138,6 +138,7 @@ def save_page(page_path, page):
     with open(page_path, 'wb') as pickle_file:
         pickle.dump(page, pickle_file)
 
+
 def save_page_teseract(page_path, page):
     with open(page_path, 'w', encoding='utf_8') as txt_file:
         for box in page.boxes:
@@ -157,7 +158,8 @@ def save_page_teseract(page_path, page):
 
 
 def tune_size(roi, original_x, original_y, min_contour_size):
-    ret, thresh = cv2.threshold(roi, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
+    # ret, thresh = cv2.threshold(roi, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
+    thresh = ((roi < 255)*255).astype(np.uint8)
     contours, hierarchy = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
     cont = []
@@ -170,7 +172,7 @@ def tune_size(roi, original_x, original_y, min_contour_size):
         x, y, w, h = cv2.boundingRect(np.array(new_cnt))
         return original_x + x, original_y + y, w, h
     else:
-        return original_x, original_y, roi.shape[0], roi.shape[1]
+        return original_x, original_y, roi.shape[1], roi.shape[0]
 
 
 def fine_tuning(page_path, page_name, img_text_path, min_contour_size):

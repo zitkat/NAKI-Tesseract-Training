@@ -195,8 +195,9 @@ class ImageText(object):
 
     def get_pixels(self, img, offset_x, offset_y):
         cv_img = cv2.cvtColor(np.array(img), cv2.COLOR_RGB2GRAY)
-        _, thresh_img = cv2.threshold(cv_img, 0, 255, cv2.THRESH_BINARY_INV)
-        yx_coordinates = np.argwhere(thresh_img == 255)
+        # _, thresh_img = cv2.threshold(cv_img, 0, 255, cv2.THRESH_BINARY_INV)
+        thresh_img = (cv_img < 255)
+        yx_coordinates = np.argwhere(thresh_img == 1)
         yx_coordinates = np.array(yx_coordinates)
 
         yx_coordinates[:, 0] = yx_coordinates[:, 0] + offset_y
@@ -226,7 +227,8 @@ class ImageText(object):
             text_height = size[1]
             obj_box = objects.Box()
             x = pattern_box.x
-            yy = pattern_box.y - pattern_box.font_size
+            # yy = pattern_box.y - pattern_box.font_size
+            yy = pattern_box.y
 
             if box_idx == 0:
                 lines = self.get_lines_for_box(pattern_box, text)
@@ -263,7 +265,7 @@ class ImageText(object):
                             char, color, font=pattern_box.font)
                         cropped = blank_img_with_char.crop((blank_img_with_char_offset, blank_img_with_char_offset,
                                                             blank_img_with_char_offset + ch_w,
-                                                            blank_img_with_char_offset + ch_h))
+                                                             blank_img_with_char_offset + ch_h))
                         pixels_yx = self.get_pixels(cropped, xx + offset_x, yy + offset_y)
 
                         obj_char = objects.Character(xx + offset_x, yy + offset_y, ch_w + offset_x,

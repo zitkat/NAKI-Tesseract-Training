@@ -27,9 +27,9 @@ class PatternBox:
 
 class Pattern:
     def __init__(self, fonts, pattern_types=["title", "one_column", "two_columns"], font_size=64,
-                 resolution_w=None, resolution_h=None):
+                 resolution_w=None, resolution_h=None, border=60):
         self.allowed_patterns = ["full", "two_columns", "one_column", "two_rows", "zig_zag", "title"]
-
+        self.border = border
         a = set(pattern_types).issubset(self.allowed_patterns )
 
         if a:
@@ -38,12 +38,12 @@ class Pattern:
             print("Unknown pattern type! Pattern type has been set to: full")
             self.pattern_types = ["one_column"]
 
-        random_norm = np.random.normal(0, 20, 3) + 20
+        # random_norm = np.random.normal(0, 20, 3) + 20
         self.fonts = fonts
         # self.font_size = int((3 + np.random.randint(3, size=1)) * font_size + int(random_norm[0]))
         self.font_size = font_size
-        self.resolution_w = resolution_w + int(random_norm[1])
-        self.resolution_h = resolution_h + int(random_norm[2])
+        self.resolution_w = resolution_w
+        self.resolution_h = resolution_h
         self.pattern_boxes = []
 
     # def process(self):
@@ -141,17 +141,17 @@ class Pattern:
         pattern_box = []
         if pattern == "title":
             font_size = 4 * self.font_size
-            w = int(self.resolution_w / 2)
+            w = int(self.resolution_w) - self.border
             h = int(font_size * 2)
-            y = 20 + font_size
-            x = 20 + font_size
+            y = self.border + font_size
+            x = self.border + font_size
             font = self.fonts[1]
 
             pattern_box.append(PatternBox(x, y, w, h, font=font, font_size=font.size))
         elif pattern == "one_column":
-            y = 20 + self.font_size
-            x = 20 + self.font_size
-            w = int(self.resolution_w / 2)
+            y = self.border + self.font_size
+            x = self.border + self.font_size
+            w = int(self.resolution_w) - self.border
             h = int(self.resolution_h/4) - (2 * self.font_size)
             pattern_box.append(PatternBox(x, y, w, h,
                                           font=self.fonts[0], font_size=self.font_size))
@@ -160,18 +160,19 @@ class Pattern:
             w = int(self.resolution_w / 2) - (2 * self.font_size)
             h = int(self.resolution_h/4) - (2 * self.font_size)
             x_right = int(self.resolution_w / 2) + self.font_size
-            y = 20 + self.font_size
-            pattern_box_left = PatternBox(20 + self.font_size, y, w, h, font=self.fonts[0],
+            y = self.border + self.font_size
+            pattern_box_left = PatternBox(self.border + self.font_size, y, w, h, font=self.fonts[0],
                                           font_size=self.font_size)
-            pattern_box_right = PatternBox(20 + x_right, y, w, h, font=self.fonts[0],
+            pattern_box_right = PatternBox(self.border + x_right, y, w, h, font=self.fonts[0],
                                            font_size=self.font_size)
             pattern_box.append(pattern_box_left)
             pattern_box.append(pattern_box_right)
 
         elif pattern == "full":
-            pattern_box_full = PatternBox(self.font_size, self.font_size, self.resolution_w - (2 * self.font_size),
-                                     self.resolution_h - (2 * self.font_size), font=self.fonts[0],
-                                     font_size=self.font_size)
+            pattern_box_full = PatternBox(self.font_size + self.border, self.font_size + self.border, self.resolution_w
+                                          - (2 * self.font_size) - 2 * self.border,
+                                         self.resolution_h - (2 * self.font_size) -  2 * self.border, font=self.fonts[0],
+                                         font_size=self.font_size)
             pattern_box.append(pattern_box_full)
 
 
