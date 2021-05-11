@@ -21,18 +21,18 @@ from PIL import ImageFont
 import utils
 import processing
 
+from util import make_path
+
 # ----------------------------------------------------------------------------------------------------------------------
 # SET PARAMETERS
-text_dir_path = "./data/texts_all/"
+text_dir_path = "./data/texts/rus1_val"
 model_dir_path = "./data/models/"
 model_name = "vae_naki_wo_060218.h5"
 model_path = model_dir_path + model_name
 
-# output_dir_path = "./data/outputs/"
-output_dir_path = "./data/teseract/"
-output_pg_path = output_dir_path + "pg_pickle/"
-output_box_path = output_dir_path + "annotations/"
-output_img_path = output_dir_path + "images/"
+output_dir_path = make_path("./outputs/rus1_val/", isdir=True)
+output_box_path = make_path(output_dir_path / "annotations/", isdir=True)
+output_img_path = make_path(output_dir_path / "images/", isdir=True)
 
 fonts_dir_path = "./data/fonts/"
 font_path = fonts_dir_path + "LITERPLA.ttf"
@@ -102,9 +102,9 @@ for path in text_file_paths:
             img_background = get_background(vae_model)
             img_combined = processing.combine_images(text_img, img_background, var2)
             pg_tuned = processing.fine_tuning_onfly(IT.page_objects[idx], text_img, min_contour_size)
-            processing.save_page_teseract(output_box_path + name + "_1_" + 'teseract' + ".box", pg_tuned)
+            processing.save_page_teseract(output_box_path / (name + "_1_" + 'teseract' + ".box"), pg_tuned)
             # processing.save_page(output_pg_path + name + "_4_" + ".pickle", pg_tuned)
-            cv2.imwrite(output_img_path + name + "_1_" + 'teseract' +".png", img_combined)
+            cv2.imwrite(str(output_img_path / (name + "_1_" + 'teseract' + ".png")), img_combined)
 
             # IT.visualize(output_img_path + name + "_1_" + 'teseract' +".png", output_pg_path + name + "_4_" + ".pickle", output_img_path + name + "result_TFF_lines.png",
             #          draw_lines=True, draw_words=True, draw_characters=True, visualize=False)
