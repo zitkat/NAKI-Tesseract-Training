@@ -229,7 +229,9 @@ cython_debug/
 *.jpg
 *.zip
 *.tif
-tessdata/
+*.traineddata
+*_components/
+checkpoints/
 output/
 data_generation/data
-data_generation/output
+data_generation/outputs
