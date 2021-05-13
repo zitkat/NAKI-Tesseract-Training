@@ -14,13 +14,27 @@ import cv2
 from random import randint
 import numpy as np
 from page_patterns import Pattern
+from pathlib import Path
 
+
+def make_path(*pathargs, isdir=False, **pathkwargs):
+    new_path = Path(*pathargs, **pathkwargs)
+    return ensured_path(new_path, isdir=isdir)
+
+
+def ensured_path(path: Path, isdir=False):
+    if isdir:
+        path.mkdir(parents=True, exist_ok=True)
+    else:
+        path.parent.mkdir(parents=True, exist_ok=True)
+    return path
 
 class ImageText(object):
-    def __init__(self, filename_or_size=None, font_path=None, font_size=0, mode="RGB", background=(255, 255, 255), encoding="utf_8_sig"):
+    def __init__(self, filename_or_size=None, font_path=None, font_size=0,
+                 mode="RGB", background=(255, 255, 255), encoding="utf_8"):
         self.mode = mode
         self.background = background
-        self.encoding = encoding
+        self.encoding = encoding  # unused
         self.font_path = font_path
         self.font_size = font_size
         self.font = [ImageFont.truetype(self.font_path, self.font_size),
@@ -207,14 +221,16 @@ class ImageText(object):
         # cv2.waitKey(0)
         return yx_coordinates
 
-    def write_all_text(self, text, document_pattern_type=[], color=(0, 0, 0), max_dislocation_offset=2, line_skip=0):
+    def write_all_text(self, text, document_pattern_type=[], color=(0, 0, 0),
+                       max_dislocation_offset=2, line_skip=0):
         # 1 page object exist
         self.page_objects[-1].resolution_w = self.size[0]
         self.page_objects[-1].resolution_h = self.size[1]
         self.page_objects[-1].pattern_type = document_pattern_type
 
         # get pattern boxes
-        pattern = Pattern(self.font, document_pattern_type, self.font_size, self.size[0], self.size[1])
+        pattern = Pattern(self.font, document_pattern_type,
+                          self.font_size, self.size[0], self.size[1])
         pattern_boxes = pattern.process()
 
         # size = self.get_text_size("A")

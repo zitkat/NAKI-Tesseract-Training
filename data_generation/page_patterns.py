@@ -5,6 +5,8 @@ __version__ = "1.0.0"
 __maintainer__ = "Ivan Gruber"
 __email__ = "ivan.gruber@seznam.cz"
 
+from functools import lru_cache
+
 import numpy as np
 import random
 
@@ -21,6 +23,7 @@ class PatternBox:
     def shift_down(self, y_shift):
         self.y += y_shift
 
+    @lru_cache()
     def get_text_size(self, text):
         return self.font.getsize(text)
 

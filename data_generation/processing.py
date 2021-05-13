@@ -78,13 +78,12 @@ import _functools as functools
 
 #    return dst2
 
-def noisy(noise_typ, image, var):
+def noisy(noise_typ, image, var=0.3):
     if noise_typ == "gauss":
         row, col = image.shape
         mean = 0
-        var = 0.3
         sigma = var ** 0.5
-        n = 8
+        n = 8  # MAGIC?
         rrow = np.uint(np.floor(row/n))
         ccol = np.uint(np.floor(col/n))
         gauss = 255.0 * np.random.normal(mean, sigma, (rrow, ccol))
@@ -101,15 +100,15 @@ def noisy(noise_typ, image, var):
         print("unknown noise mode")
 
 
-def combine_images(img_foreground, img_background, var):
+def combine_images(img_foreground, img_background, var=0.3, blur_kernel=(7, 7)):
     # img_foreground = noisy("gauss_add_black", img_foreground)
-    ret, mask = cv2.threshold(img_foreground, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
+    ret, mask = cv2.threshold(img_foreground, 0, 255,
+                              cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
 
     img_noise = noisy("gauss", img_foreground, var)
-    #img_noise = noisy("gauss", img_noise)
     img_noise8 = np.uint8(img_noise)
     img_noise3ch = cv2.cvtColor(img_noise8, cv2.COLOR_GRAY2BGR)
-    img_noise3ch = cv2.blur(img_noise3ch, (7, 7))
+    img_noise3ch = cv2.blur(img_noise3ch, blur_kernel)
     alpha = cv2.cvtColor(img_noise3ch, cv2.COLOR_BGR2GRAY)
     alpha = cv2.bitwise_and(alpha, alpha, mask=mask)
 
