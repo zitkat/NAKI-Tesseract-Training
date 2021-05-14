@@ -18,7 +18,7 @@ import cv2
 import numpy as np
 
 import processing
-from data_generation.background_generator import load_model, get_background
+from background_generator import load_model, get_background
 from utils import make_path, ensured_path, ImageText
 
 import matplotlib.pyplot as plt
@@ -183,7 +183,7 @@ def run_generation(text_dir_path, font, font_size, foreground_color,
                                                     text_img,
                                                     min_contour_size)
 
-            processing.save_page_teseract(output_box_path / (name + "_1_" + 'teseract' + ".box"),
+            processing.save_page_teseract(output_box_path / (name + "_1_" + 'tesseract' + ".box"),
                                           pg_tuned)
 
             # cv2.imwrite(str(output_img_path / (name + "_1_" + 'arig' + ".png")),
