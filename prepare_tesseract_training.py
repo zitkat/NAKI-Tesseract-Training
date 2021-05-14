@@ -51,10 +51,13 @@ def prepare_lstmf_files(output_lstmf_path: Path,
                                       + tessdatadir_opt + ("lstm.train",)
             print(f"===Tesseract output for file {output_path}===")
             tessout = sub.run(tesseract_lstmf_command)
-            # with open(output_path.with_suffix(".tout"), "w",
-            #           newline="\n",
-            #           encoding="utf-8") as f:
-            #     f.write(str(tessout.stdout))
+            if not output_lstmf.exists():
+                print(f"Could not create {output_lstmf}, see tesseract log tout")
+                with open(output_path.with_suffix(".tout"), "w",
+                          newline="\n",
+                          encoding="utf-8") as f:
+                    f.write(str(tessout.stdout))
+                continue
         else:
             print(f"{output_lstmf} already exists.")
 
@@ -79,10 +82,10 @@ def main(work_folder, lang, tessdata_path):
     input_box_path = work_folder / "annotations"
     output_lstmf_path = ensured_path(work_folder / "lstmf", isdir=True)
 
-    for obj in chain(input_img_path.iterdir(), input_box_path.iterdir()):
-        if not (output_lstmf_path / obj.name).exists():
-            print(f"Copying {obj}")
-            shutil.copy(obj, output_lstmf_path)
+    for img_path in input_img_path.iterdir():
+        txt_path = (input_box_path / img_path.name).with_suffix(".box")
+        copy_obj(img_path, output_lstmf_path)
+        copy_obj(txt_path, output_lstmf_path)
 
     lstmf_files = prepare_lstmf_files(output_lstmf_path, lang=lang, tessdata_dir=tessdata_path)
 
@@ -90,7 +93,13 @@ def main(work_folder, lang, tessdata_path):
          mode='w',
          newline="\n",
          encoding="utf-8",
-         ).write("\n".join(map(str, lstmf_files)))
+         ).write("\n".join(map(str, output_lstmf_path.glob("*.lstmf"))))
+
+
+def copy_obj(obj, output_folder):
+    if not (output_folder / obj.name).exists():
+        print(f"Copying {obj}")
+        shutil.copy(obj, output_folder)
 
 
 if __name__ == '__main__':

@@ -73,8 +73,8 @@ def tesseract(api, image) -> List[TesseractResult]:
 @click.command(epilog='(c) 2021 T. Zitka, KKY UWB')
 @click.option("-d", "--dataset-path",
                     type=Path,
-                    default=Path("data_annot/task_typewritten_2_cut"),
-                    help="Path to root directory with images and annotations")
+                    default=Path(r"D:\Datasets\NAKI\annotated\task_typewritten_2_cut"),
+                    help="Path to root directory with images and annotations in corresponding folders.")
 @click.option("-td", "--tessdata-path",
                      type=Path,
                      default=Path("tessdata"),
@@ -93,7 +93,7 @@ def main(dataset_path: Path,  tessdata_path: Path, model_name: str, output_path:
     This script evaulates model, which has to be present in <tessdata> directory
     as <model_name>.traineddata on dataset in <dataset-path>. The dataset must be
     composed of *.jpg images and *.txt annotations. Output is a csv files with
-    Levenstein distance, CER and WER for each image
+    Levenstein distance, CER and WER for each image. Newlines are ignored.
     """
     input_imgs_path = dataset_path / "images"
     input_txts_path = dataset_path / "annotations"
@@ -106,7 +106,7 @@ def main(dataset_path: Path,  tessdata_path: Path, model_name: str, output_path:
         for imagepath, truth_path in zip(input_imgs_path.glob("*.jpg"),
                                          input_txts_path.glob("*.txt")):
             image = Image.open(imagepath)
-            truth_text = open(truth_path, encoding="utf-8").read()
+            truth_text = open(truth_path, encoding="utf-8").read().replace("\n", "")
 
             results = tesseract(api, image)
             ocr_text = " ".join(text_from_results(results).split())
@@ -125,7 +125,6 @@ def main(dataset_path: Path,  tessdata_path: Path, model_name: str, output_path:
             print(data_list[-1])
 
     df = pd.DataFrame(data_list)
-    df.loc["means"] = df.iloc[:, 1:].mean()
     df.to_csv(ensured_path(output_path / (model_name + "_annot_eval.csv")))
 
 

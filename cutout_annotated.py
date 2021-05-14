@@ -38,17 +38,21 @@ def main(dataset_path: Path, category):
                     text = anot["attributes"].get("Text", "")
 
                     # in case we need box file
-                    # xmin = 0
-                    # ymin = 0
-                    # xmax = cut_array.shape[1]
-                    # ymax = cut_array.shape[0]
-                    # line = f"WordStr {xmin} {ymin} {xmax} {ymax} 0 #{text} \n" \
-                    #        f"\t {xmin} {ymin} {xmax + 1} {ymax} 0\n"
+                    xmin = 0
+                    ymin = 0
+                    xmax = cut_array.shape[1]
+                    ymax = cut_array.shape[0]
+                    line = f"WordStr {xmin} {ymin} {xmax} {ymax} 0 #{text} \n" \
+                           f"\t {xmin} {ymin} {xmax + 1} {ymax} 0\n"
 
                     open((output_path_annot / cut_name).with_suffix(".txt"),
                          mode='w',
                          encoding="utf-8",
                          ).write(text)
+                    open((output_path_annot / cut_name).with_suffix(".box"),
+                         mode='w',
+                         encoding="utf-8",
+                         ).write(line)
 
 
 if __name__ == '__main__':
